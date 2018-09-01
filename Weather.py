@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, Response
 import json
 import datetime
+import os
 app = Flask(__name__)
 
-localFile = "./data/today.json"
+
+localFile = os.path.dirname(__file__) + "/data/today.json"
 
 @app.route('/weather/input', methods=['POST'])
 def DataCollecter():
@@ -58,4 +60,4 @@ def jsonp(data, callback="function"):
         )
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
