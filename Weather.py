@@ -34,6 +34,8 @@ def post(r):
 
     return ("OK",200)
 
+def postGCPDataStore(j):
+    pass
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True)
