@@ -11,7 +11,6 @@ def DataCollecter():
         app.logger.debug(request.method)
         app.logger.debug(request.headers)
         app.logger.debug(request.form)
-        if request.method == 'POST':
         if not 'key' in request.form.keys()  and not request.form['key'].equals('piyopiyo'):
           return "aho!"
 
