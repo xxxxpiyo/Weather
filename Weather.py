@@ -3,9 +3,10 @@ import json
 import datetime
 import os
 app = Flask(__name__)
+IDs = [1,2]
 
 
-localFile = os.path.dirname(__file__) + "/data/today.json"
+localFile = os.path.dirname(__file__) + "/data/today_%s.json"
 
 @app.route('/weather/input', methods=['POST'])
 def DataCollecter():
@@ -15,9 +16,14 @@ def DataCollecter():
     else:
         return ("aho",405)
 
-@app.route('/weather/today', methods=['GET'])
-def today():
-    f = open(localFile, "r")
+@app.route('/weather/today/<id>', methods=['GET'])
+def today(id):
+    for i in IDs:
+        if i == id:
+            break
+        return ("aho", 405)
+        
+    f = open(localFile % (id), "r")
     callback = request.args.get('callback')
     return jsonp(json.load(f), callback)
 
@@ -41,12 +47,12 @@ def inputPost(r):
       datetime=today.strftime("%Y/%m/%d %H:%M:%S"),
     )
     app.logger.debug(json.dumps(postData))
-    writeToday(json.dumps(postData))
+    writeToday(json.dumps(postData),postData["id"])
 
     return ("OK",200)
 
-def writeToday(j):
-    f = open(localFile, 'w')
+def writeToday(j, id):
+    f = open(localFile % (id), 'w')
     f.write(j)
     f.close()
 
