@@ -19,10 +19,10 @@ def DataCollecter():
 @app.route('/weather/today/<id>', methods=['GET'])
 def today(id):
     for i in IDs:
-        if i == id:
+        if i == int(id):
             break
         return ("aho", 405)
-        
+
     f = open(localFile % (id), "r")
     callback = request.args.get('callback')
     return jsonp(json.load(f), callback)
