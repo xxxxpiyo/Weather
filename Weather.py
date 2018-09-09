@@ -18,9 +18,12 @@ def DataCollecter():
 
 @app.route('/weather/today/<id>', methods=['GET'])
 def today(id):
+    flag = False
     for i in IDs:
         if i == int(id):
+            flag = True
             break
+    if flag != True:
         return ("aho", 405)
 
     f = open(localFile % (id), "r")
