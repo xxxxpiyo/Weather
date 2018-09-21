@@ -1,11 +1,11 @@
+# coding=utf-8
 from flask import Flask, request, jsonify, Response
 import json
 import datetime
 import os
 app = Flask(__name__)
 IDs = [1,2]
-
-
+gcp_config_ini = os.path.dirname(__file__) + "config.ini"
 localFile = os.path.dirname(__file__) + "/data/today_%s.json"
 
 @app.route('/weather/input', methods=['POST'])
@@ -51,6 +51,8 @@ def inputPost(r):
     )
     app.logger.debug(json.dumps(postData))
     writeToday(json.dumps(postData),postData["id"])
+    postData.pop("datetime")
+    postGCPDataStore(postData)
 
     return ("OK",200)
 
@@ -60,7 +62,9 @@ def writeToday(j, id):
     f.close()
 
 def postGCPDataStore(j):
-    pass
+    gcp = ConnectGCP.ConnectGCP(gcp_config_ini)
+    gcp.connectDS()
+    gcp.postData(json.loads(jsondata))
 
 def jsonp(data, callback="function"):
     return Response(

@@ -1,3 +1,4 @@
+# coding=utf-8
 import ConfigParser, os
 from google.cloud import datastore
 from datetime import datetime
@@ -9,6 +10,7 @@ class ConnectGCP:
     project = None
     weatherkind = None
     datastoreClient = None
+    requireData = ["id", "temperature", "humidity"]
 
     def __init__(self, ini):
         config = ConfigParser.SafeConfigParser()
@@ -18,17 +20,59 @@ class ConnectGCP:
         self.project = config.get("GCP", "project")
 
     def connectDS(self):
-        self.datastoreClient = datastore.Client.from_service_account_json(self.key)
+        self.datastoreClient = datastore.Client.from_service_account_json(
+            self.key,
+            project=self.project)
 
     def GetWeatherByID(self, device_id):
-        query = client.query(kind=self.kind)
+        query = self.datastoreClient.query(kind=self.weatherkind)
         query.add_filter("device_id", "=", device_id)
         return query.fetch()
 
     def postData(self, data):
-        entity = datastore.entity.Entity()
+
+        # validation
+        for key in self.requireData:
+            try:
+                if data[key] is None:
+                    return (False, "{},{}".format(key, data[key]))
+            except:
+                return (False, "{},{}".format(key, data[key]))
+
+        # id -> device_id
+        data["device_id"] = data.pop("id")
+
+        now = datetime.now(timezone('UTC'))
+
+        # keyの作成
+        ekey = datastore.key.Key(
+            "weatherData",
+            "{}-{}".format(now.strftime('%s'), data["device_id"]),
+             project=self.project
+        )
+        print ekey
+
+        # entityの作成
+        entity = datastore.entity.Entity(key=ekey)
+
+        # タイムスタンプ追加
+        entity["datetime"] = now
+
+        # dataを追加
+        entity.update(data)
+
+        for k in entity.keys():
+            print "{}:{}".format(k,entity[k])
+
+        # GCPにPOST
+        self.datastoreClient.put(entity)
+
+        return True
+
+
 
     def dummy(self, str):
+        return self.__JST2UTC(str)
 
     def __JST2UTC(self,date):
         d = datetime.strptime(date, '%Y/%m/%d %H:%M:%S')
