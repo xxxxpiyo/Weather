@@ -7,8 +7,8 @@ import ConnectGCP
 
 app = Flask(__name__)
 IDs = [1,2]
-gcp_config_ini = os.path.dirname(__file__) + "/config.ini"
-localFile = os.path.dirname(__file__) + "/data/today_%s.json"
+gcp_config_ini = "./config.ini"
+localFile = "./data/today_%s.json"
 
 @app.route('/weather/input', methods=['POST'])
 def DataCollecter():
