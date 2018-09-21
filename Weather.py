@@ -3,9 +3,11 @@ from flask import Flask, request, jsonify, Response
 import json
 import datetime
 import os
+import ConnectGCP
+
 app = Flask(__name__)
 IDs = [1,2]
-gcp_config_ini = os.path.dirname(__file__) + "config.ini"
+gcp_config_ini = os.path.dirname(__file__) + "/config.ini"
 localFile = os.path.dirname(__file__) + "/data/today_%s.json"
 
 @app.route('/weather/input', methods=['POST'])
@@ -64,7 +66,7 @@ def writeToday(j, id):
 def postGCPDataStore(j):
     gcp = ConnectGCP.ConnectGCP(gcp_config_ini)
     gcp.connectDS()
-    gcp.postData(json.loads(jsondata))
+    gcp.postData(j)
 
 def jsonp(data, callback="function"):
     return Response(

@@ -13,6 +13,7 @@ class ConnectGCP:
     requireData = ["id", "temperature", "humidity"]
 
     def __init__(self, ini):
+        print ini
         config = ConfigParser.SafeConfigParser()
         config.read(ini)
         self.key = os.path.dirname(__file__) + '/' + config.get("GCP","keyfile")
@@ -32,12 +33,15 @@ class ConnectGCP:
     def postData(self, data):
 
         # validation
+        print "aho"
+        print type(data)
         for key in self.requireData:
             try:
                 if data[key] is None:
                     return (False, "{},{}".format(key, data[key]))
             except:
-                return (False, "{},{}".format(key, data[key]))
+                print "ERROR: {}".format(key)
+                return False
 
         # id -> device_id
         data["device_id"] = data.pop("id")
